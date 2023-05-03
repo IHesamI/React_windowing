@@ -2,41 +2,47 @@ import React, { useRef } from "react";
 import { useMemo, useState, useEffect } from "react";
 
 function RenderList({ Data }) {
-    const [is_visible, setIs_visible] = useState(true)
-    const [top_index, setTop_index] = useState(0)
-    const [bottom_index, setBottom_index] = useState(10);
-    const [visibleItems, setVisibleItems] = useState(Data.slice(top_index, bottom_index + 1))
-    
-    const ref = useRef(null);
+
+    const [visibleItems, setVisibleItems] = useState([]);
+    const scrollRef = useRef(null);
+
     useEffect(() => {
         const observer = new IntersectionObserver(
-            ([entry]) => {
-                setIs_visible(entry.Intersecting)
-            }, {
+            (entries) => {
+                const visible = entries.filter((entry) => entry.isIntersecting).map((entry) => Number(entry.target.dataset.index));
+                // console.log('isvisiblr', visible)
+                setVisibleItems(visible);
+            }, { threshold: 0 });
+        const itemsList = scrollRef.current.children[1];
 
-        })
-        observer.observe(ref.current);
-        return () => observer.disconnect();
-    }, [is_visible])
+        for (let i = 0; i < itemsList.children.length; i++) {
+            const item = itemsList.children[i];
+            item.dataset.index = i;
+            observer.observe(item);
+        }
+        // console.log(itemsList.children[5]);
+        return () => {
+            observer.disconnect();
+        };
+    }, [visibleItems]);
 
-    useEffect(() => {
-        setBottom_index(bottom_index + 5);
-        setTop_index(top_index + 5);
-        const new_items=[...Data.slice(top_index, bottom_index + 1)]
-        setVisibleItems(new_items);
-    }, [is_visible])
-
-    console.log(visibleItems)
     return (
-        <div>
+        <div
+            ref={scrollRef}>
             <p>image with random url </p>
-            {
-                Data.slice(top_index, bottom_index).map((id, index) =>
-                    <div key={index} ref={index == top_index + 2 ? ref : null}>
-                        <img src={`https://picsum.photos/id/${id}/200/300`} alt={`image with id ${index}`}/>
-                    </div>
-                )
-            }
+            <div
+                style={{ width: '250', height: '3000' }}>
+                {
+                    Data.map((id, index) =>
+                        <div
+                            style={{ height: '300px' }}
+                            key={index}>
+                            {
+                                visibleItems.includes(index) ? < img src={`https://picsum.photos/id/${id}/250/300`} alt={`image with id ${index}`} /> : <div style={{ height: `300px` }} />}
+                        </div>
+                    )
+                }
+            </div>
 
         </div>
     )
