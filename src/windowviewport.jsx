@@ -13,7 +13,8 @@ function RenderList({ Data }) {
             (entries) => {
                 // only the visible items are hold 
                 const visible = entries.filter((entry) => entry.isIntersecting).map((entry) => Number(entry.target.dataset.index));
-                setVisibleItems(visible);
+                if (visible.length!=visibleItems.length)
+                    setVisibleItems(visible);
             }, { threshold: 0 });
 
         // list of items in DOM for observing
@@ -30,7 +31,7 @@ function RenderList({ Data }) {
             observer.disconnect();
         };
     }, [visibleItems]);
-
+    console.log(visibleItems)
     return (
         <div
             ref={scrollRef}>
