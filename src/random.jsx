@@ -1,11 +1,8 @@
 const useRandomData = () => {
-    const ListoFUrls_id = [];
-    // Math.random();
-    for (let i = 0; i < 100; i++) {
-        let random = Math.random()
-        let intRandom = Math.ceil(random * 100)
-        ListoFUrls_id.push(intRandom)
-    }
+    const ListoFUrls_id = Array(100)
+                            .fill(null)
+                            .map((e) => Math.ceil(100 * Math.random()));
+    console.log(ListoFUrls_id)
     return ListoFUrls_id
 }
 export default useRandomData;
